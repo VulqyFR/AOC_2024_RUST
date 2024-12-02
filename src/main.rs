@@ -1,4 +1,5 @@
 mod day01;
+mod day02;
 
 fn main() -> std::io::Result<()> {
     println!("\n🎄 Welcome to my Advent of Code 2024 solutions in Rust 🦀!");
@@ -10,7 +11,16 @@ fn main() -> std::io::Result<()> {
     println!("Elapsed time: {:?}\n\n", start.elapsed());
     println!("Second star:\n");
     let start = std::time::Instant::now();
-    day01::second_star()?;    
+    day01::second_star()?;
+    println!("Elapsed time: {:?}\n", start.elapsed());
+
+    println!("First star: \n");
+    let start = std::time::Instant::now();
+    day02::first_star()?;
+    println!("Elapsed time: {:?}\n\n", start.elapsed());
+    println!("Second star:\n");
+    let start = std::time::Instant::now();
+    day02::second_star()?;
     println!("Elapsed time: {:?}\n", start.elapsed());
     Ok(())
 }
