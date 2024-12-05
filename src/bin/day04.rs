@@ -8,7 +8,7 @@ fn main() -> std::io::Result<()> {
     println!("Elapsed time: {:?}\n\n", start.elapsed());
     println!("Second star:\n");
     let start = std::time::Instant::now();
-    //day04::second_star()?;
+    day04::second_star()?;
     println!("Elapsed time: {:?}\n", start.elapsed());
     Ok(())
 }
