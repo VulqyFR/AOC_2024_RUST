@@ -1,26 +1,9 @@
 use std::fs::File;
-use std::io::{self, BufRead};
+use std::io::{BufRead, BufReader};
 
-pub fn read_file(filename: &str, part: u32) -> Result<(), io::Error> {
-    let file = File::open(filename)?;
-    let reader = io::BufReader::new(file);
-    let mut sum = 0;
-    let mut enabled = true;
-
-    if part == 1 {
-        for line in reader.lines() {
-            sum += process_line_part1(&line?);
-        }
-    } else {
-        for line in reader.lines() {
-            let (line_sum, new_enabled) = process_line_part2(&line?, enabled);
-            sum += line_sum;
-            enabled = new_enabled;
-        }
-    }
-
-    println!("Part {}: {}", part, sum);
-    Ok(())
+fn read_file() -> Result<BufReader<File>, std::io::Error> {
+    let file = File::open("src/inputs/day03.txt")?;
+    Ok(BufReader::new(file))
 }
 
 fn parse_number(chars: &[char], start: usize) -> Option<(i64, usize)> {
@@ -37,77 +20,82 @@ fn parse_number(chars: &[char], start: usize) -> Option<(i64, usize)> {
     None
 }
 
-fn process_line_part1(line: &str) -> i64 {
-    let chars: Vec<char> = line.chars().collect();
-    let mut sum = 0;
-    let mut i = 0;
-
-    while i < chars.len() - 4 {
-        if chars[i..].starts_with(&['m', 'u', 'l', '(']) {
-            i += 4;
-            if let Some((x, next_pos)) = parse_number(&chars, i) {
-                i = next_pos;
-                if i < chars.len() && chars[i] == ',' {
-                    i += 1;
-                    if let Some((y, next_pos)) = parse_number(&chars, i) {
-                        i = next_pos;
-                        if i < chars.len() && chars[i] == ')' {
-                            sum += x * y;
-                        }
-                    }
-                }
-            }
-        } else {
-            i += 1;
-        }
-    }
-    sum
-}
-
-fn process_line_part2(line: &str, mut enabled: bool) -> (i64, bool) {
-    let chars: Vec<char> = line.chars().collect();
-    let mut sum = 0;
-    let mut i = 0;
-
-    while i < chars.len() {
-        if i + 3 < chars.len() && chars[i..].starts_with(&['d', 'o', '(', ')']) {
-            enabled = true;
-            i += 4;
-        } else if i + 6 < chars.len()
-            && chars[i..].starts_with(&['d', 'o', 'n', '\'', 't', '(', ')'])
-        {
-            enabled = false;
-            i += 7;
-        } else if enabled && i + 3 < chars.len() && chars[i..].starts_with(&['m', 'u', 'l', '(']) {
-            i += 4;
-            if let Some((x, next_pos)) = parse_number(&chars, i) {
-                i = next_pos;
-                if i < chars.len() && chars[i] == ',' {
-                    i += 1;
-                    if let Some((y, next_pos)) = parse_number(&chars, i) {
-                        i = next_pos;
-                        if i < chars.len() && chars[i] == ')' {
-                            sum += x * y;
-                            i += 1;
-                            continue;
-                        }
-                    }
-                }
-            }
-            i += 1;
-        } else {
-            i += 1;
-        }
-    }
-    (sum, enabled)
-}
-
 pub fn first_star() -> Result<(), std::io::Error> {
-    read_file("src/inputs/day03.txt", 1)?;
+    let reader = read_file()?;
+    let mut total = 0;
+
+    for line in reader.lines() {
+        let chars: Vec<char> = line?.chars().collect();
+        let mut i = 0;
+
+        while i < chars.len() - 4 {
+            if chars[i..].starts_with(&['m', 'u', 'l', '(']) {
+                i += 4;
+                if let Some((x, next_pos)) = parse_number(&chars, i) {
+                    i = next_pos;
+                    if i < chars.len() && chars[i] == ',' {
+                        i += 1;
+                        if let Some((y, next_pos)) = parse_number(&chars, i) {
+                            i = next_pos;
+                            if i < chars.len() && chars[i] == ')' {
+                                total += x * y;
+                            }
+                        }
+                    }
+                }
+            }
+            i += 1;
+        }
+    }
+
+    println!("First star: {}", total);
     Ok(())
 }
 
 pub fn second_star() -> Result<(), std::io::Error> {
-    read_file("src/inputs/day03.txt", 2)?;
+    let reader = read_file()?;
+    let mut total = 0;
+    let mut enabled = true;
+
+    for line in reader.lines() {
+        let chars: Vec<char> = line?.chars().collect();
+        let mut i = 0;
+
+        while i < chars.len() {
+            if i + 3 < chars.len() && chars[i..].starts_with(&['d', 'o', '(', ')']) {
+                enabled = true;
+                i += 4;
+            } else if i + 6 < chars.len()
+                && chars[i..].starts_with(&['d', 'o', 'n', '\'', 't', '(', ')'])
+            {
+                enabled = false;
+                i += 7;
+            } else if enabled
+                && i + 3 < chars.len()
+                && chars[i..].starts_with(&['m', 'u', 'l', '('])
+            {
+                i += 4;
+                if let Some((x, next_pos)) = parse_number(&chars, i) {
+                    i = next_pos;
+                    if i < chars.len() && chars[i] == ',' {
+                        i += 1;
+                        if let Some((y, next_pos)) = parse_number(&chars, i) {
+                            i = next_pos;
+                            if i < chars.len() && chars[i] == ')' {
+                                total += x * y;
+                                i += 1;
+                                continue;
+                            }
+                        }
+                    }
+                }
+                i += 1;
+            } else {
+                i += 1;
+            }
+        }
+    }
+
+    println!("Second star: {}", total);
     Ok(())
 }
