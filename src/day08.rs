@@ -31,16 +31,12 @@ fn is_collinear(p1: (i32, i32), p2: (i32, i32), p3: (i32, i32)) -> bool {
     let (x2, y2) = (p2.1, p2.0);
     let (x3, y3) = (p3.1, p3.0);
 
-    // Utilise le produit croisé pour vérifier la colinéarité
     (y2 - y1) * (x3 - x1) == (y3 - y1) * (x2 - x1)
 }
 
 fn find_points_between(p1: (i32, i32), p2: (i32, i32), rows: i32, cols: i32) -> Vec<(i32, i32)> {
     let mut points = Vec::new();
-    let (y1, x1) = p1;
-    let (y2, x2) = p2;
 
-    // Version simplifiée: teste tous les points de la grille
     for y in 0..rows {
         for x in 0..cols {
             if is_collinear(p1, p2, (y, x)) {
