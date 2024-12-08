@@ -24,11 +24,13 @@ Rust is an excellent choice for:
 
 Each day's solution can be found in its respective file in the `src/bin` directory:
 
+```
 📂 src/
 ├── day01.rs
 ├── day02.rs
 ├── day03.rs
 └── …
+```
 
 Run a specific solution using:
 
